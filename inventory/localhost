@@ -1,0 +1,3 @@
+# Localhost inventory for testing playbooks locally
+[local]
+localhost ansible_connection=local

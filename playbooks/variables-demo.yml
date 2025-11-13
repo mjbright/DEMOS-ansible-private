@@ -1,0 +1,62 @@
+---
+# Variables and Conditionals Demo
+# Demonstrates how to use variables, conditionals, and facts
+# Run with: ansible-playbook playbooks/variables-demo.yml -i inventory/localhost
+
+- name: Variables and Conditionals Demo
+  hosts: localhost
+  gather_facts: yes
+
+  vars:
+    app_environment: development
+    app_name: myapp
+    enable_monitoring: true
+    server_ports:
+      - 8080
+      - 8081
+      - 8082
+
+  tasks:
+    - name: Display environment variable
+      debug:
+        msg: "Running in {{ app_environment }} environment"
+
+    - name: Conditional task - only in production
+      debug:
+        msg: "This is production environment!"
+      when: app_environment == "production"
+
+    - name: Conditional task - only in development
+      debug:
+        msg: "This is development environment!"
+      when: app_environment == "development"
+
+    - name: Show monitoring status
+      debug:
+        msg: "Monitoring is {{ 'enabled' if enable_monitoring else 'disabled' }}"
+
+    - name: Display server ports
+      debug:
+        msg: "Server listening on ports: {{ server_ports | join(', ') }}"
+
+    - name: Loop through ports
+      debug:
+        msg: "Port {{ item }} is configured"
+      loop: "{{ server_ports }}"
+
+    - name: Check OS family
+      debug:
+        msg: "Operating System Family: {{ ansible_os_family }}"
+
+    - name: Task based on OS family
+      debug:
+        msg: "This is a Debian-based system"
+      when: ansible_os_family == "Debian"
+
+    - name: Set fact based on condition
+      set_fact:
+        deployment_type: "{{ 'blue-green' if app_environment == 'production' else 'rolling' }}"
+
+    - name: Display deployment type
+      debug:
+        msg: "Using {{ deployment_type }} deployment for {{ app_name }}"

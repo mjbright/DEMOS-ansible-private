@@ -1,0 +1,18 @@
+---
+# Variables for all hosts
+# These variables apply to all hosts in the inventory
+
+ntp_servers:
+  - 0.pool.ntp.org
+  - 1.pool.ntp.org
+
+dns_servers:
+  - 8.8.8.8
+  - 8.8.4.4
+
+timezone: UTC
+
+common_packages:
+  - htop
+  - net-tools
+  - vim

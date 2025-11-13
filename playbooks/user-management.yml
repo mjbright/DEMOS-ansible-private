@@ -1,0 +1,71 @@
+---
+# User Management Demo
+# Demonstrates user and group management with Ansible
+# Run with: ansible-playbook playbooks/user-management.yml -i inventory/localhost
+
+- name: User and Group Management Demo
+  hosts: localhost
+  become: yes
+  gather_facts: yes
+
+  vars:
+    demo_users:
+      - name: alice
+        comment: "Alice Demo User"
+        groups: sudo
+      - name: bob
+        comment: "Bob Demo User"
+        groups: users
+
+  tasks:
+    - name: Create a demo group
+      group:
+        name: demogroup
+        state: present
+        gid: 3000
+
+    - name: Create demo users
+      user:
+        name: "{{ item.name }}"
+        comment: "{{ item.comment }}"
+        groups: "{{ item.groups }}"
+        shell: /bin/bash
+        create_home: yes
+        state: present
+      loop: "{{ demo_users }}"
+      register: user_creation
+
+    - name: Display created users
+      debug:
+        msg: "User {{ item.name }} created with UID {{ item.uid }}"
+      loop: "{{ user_creation.results }}"
+
+    - name: Check if user alice exists
+      getent:
+        database: passwd
+        key: alice
+      register: alice_info
+      failed_when: false
+
+    - name: Show alice user information
+      debug:
+        msg: "Alice user exists with home directory: {{ alice_info.ansible_facts.getent_passwd.alice[4] }}"
+      when: alice_info.ansible_facts.getent_passwd.alice is defined
+
+    - name: Set file with specific ownership
+      copy:
+        content: "This file is owned by alice"
+        dest: /tmp/alice-file.txt
+        owner: alice
+        group: demogroup
+        mode: '0644'
+
+    - name: Clean up - Remove demo users (optional - commented out)
+      # Uncomment the following tasks to clean up after testing
+      # user:
+      #   name: "{{ item.name }}"
+      #   state: absent
+      #   remove: yes
+      # loop: "{{ demo_users }}"
+      debug:
+        msg: "Demo users created. To remove them, uncomment the cleanup tasks in this playbook."

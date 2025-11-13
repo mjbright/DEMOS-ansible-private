@@ -1,0 +1,7 @@
+---
+# Host-specific variables for web1
+# These override group and all variables
+
+server_name: web1.example.com
+ssl_enabled: true
+max_connections: 1000
