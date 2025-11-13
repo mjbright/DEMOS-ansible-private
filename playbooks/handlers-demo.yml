@@ -1,0 +1,78 @@
+---
+# Handlers and Notifications Demo
+# Demonstrates how handlers work in Ansible
+# Run with: ansible-playbook playbooks/handlers-demo.yml -i inventory/localhost
+
+- name: Handlers and Notifications Demo
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    config_file: /tmp/demo-service.conf
+    service_file: /tmp/demo-service.sh
+
+  handlers:
+    - name: restart demo service
+      debug:
+        msg: "Handler triggered: Restarting demo service..."
+
+    - name: reload demo service
+      debug:
+        msg: "Handler triggered: Reloading demo service configuration..."
+
+    - name: validate configuration
+      debug:
+        msg: "Handler triggered: Validating configuration..."
+
+  tasks:
+    - name: Create service script
+      copy:
+        content: |
+          #!/bin/bash
+          echo "Demo service is running"
+        dest: "{{ service_file }}"
+        mode: '0755'
+      notify: restart demo service
+
+    - name: Create initial configuration
+      copy:
+        content: |
+          # Demo Service Configuration
+          port=8080
+          timeout=30
+        dest: "{{ config_file }}"
+        mode: '0644'
+      notify:
+        - validate configuration
+        - reload demo service
+
+    - name: Update configuration (will trigger handlers)
+      lineinfile:
+        path: "{{ config_file }}"
+        regexp: '^port='
+        line: 'port=9090'
+      notify: reload demo service
+
+    - name: Task that doesn't change anything (no handlers triggered)
+      copy:
+        content: |
+          # Demo Service Configuration
+          port=9090
+          timeout=30
+        dest: "{{ config_file }}"
+        mode: '0644'
+      notify: reload demo service
+
+    - name: Display handler execution info
+      debug:
+        msg: |
+          Handlers are executed at the end of the play, not immediately.
+          They run only once even if notified multiple times.
+          They run in the order they are defined in the handlers section.
+
+    - name: Force handler execution with meta
+      meta: flush_handlers
+
+    - name: Tasks after handler flush
+      debug:
+        msg: "All handlers have been executed by now due to flush_handlers"

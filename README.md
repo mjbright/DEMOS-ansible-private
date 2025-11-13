@@ -21,6 +21,8 @@ This repository contains practical Ansible examples and demonstrations covering:
 - Role development
 - File operations
 - Package management
+- User and group management
+- Handlers and notifications
 - Conditionals and loops
 
 ## 📁 Repository Structure
@@ -36,6 +38,8 @@ This repository contains practical Ansible examples and demonstrations covering:
 │   ├── install-packages.yml # Package installation demo
 │   ├── file-operations.yml  # File and directory operations
 │   ├── variables-demo.yml   # Variables and conditionals
+│   ├── user-management.yml  # User and group management
+│   ├── handlers-demo.yml    # Handlers and notifications
 │   └── use-role.yml        # Example using roles
 ├── roles/                  # Ansible roles
 │   └── webserver/          # Example webserver role
@@ -149,7 +153,33 @@ Explores variable usage and conditional logic:
 ansible-playbook playbooks/variables-demo.yml -i inventory/localhost
 ```
 
-### 5. Using Roles (`playbooks/use-role.yml`)
+### 5. User Management (`playbooks/user-management.yml`)
+Demonstrates user and group management:
+- Creating groups with specific GIDs
+- Creating users with custom properties
+- Managing user groups and shells
+- Setting file ownership
+- User information retrieval
+
+**Run it:**
+```bash
+ansible-playbook playbooks/user-management.yml -i inventory/localhost
+```
+
+### 6. Handlers and Notifications (`playbooks/handlers-demo.yml`)
+Shows how handlers work in Ansible:
+- Defining handlers
+- Triggering handlers with notify
+- Handler execution order
+- Forcing handler execution with flush_handlers
+- Understanding when handlers run
+
+**Run it:**
+```bash
+ansible-playbook playbooks/handlers-demo.yml -i inventory/localhost
+```
+
+### 7. Using Roles (`playbooks/use-role.yml`)
 Demonstrates role-based organization:
 - Role structure and best practices
 - Template usage
