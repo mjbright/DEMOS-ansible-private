@@ -1,0 +1,55 @@
+---
+# File and Directory Management Demo
+# Demonstrates file operations in Ansible
+# Run with: ansible-playbook playbooks/file-operations.yml -i inventory/localhost
+
+- name: File and Directory Operations Demo
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    demo_dir: /tmp/ansible-demo
+    demo_file: "{{ demo_dir }}/demo.txt"
+
+  tasks:
+    - name: Create demo directory
+      file:
+        path: "{{ demo_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create a file with content
+      copy:
+        content: |
+          This is a demo file created by Ansible
+          Timestamp: {{ ansible_date_time.iso8601 }}
+        dest: "{{ demo_file }}"
+        mode: '0644'
+
+    - name: Check if file exists
+      stat:
+        path: "{{ demo_file }}"
+      register: file_stat
+
+    - name: Display file information
+      debug:
+        msg: |
+          File exists: {{ file_stat.stat.exists }}
+          File size: {{ file_stat.stat.size }} bytes
+          File mode: {{ file_stat.stat.mode }}
+
+    - name: Create multiple files using loop
+      copy:
+        content: "File number {{ item }}"
+        dest: "{{ demo_dir }}/file{{ item }}.txt"
+      loop: [1, 2, 3, 4, 5]
+
+    - name: List all files in demo directory
+      find:
+        paths: "{{ demo_dir }}"
+        patterns: "*.txt"
+      register: found_files
+
+    - name: Show found files
+      debug:
+        msg: "Found {{ found_files.matched }} files: {{ found_files.files | map(attribute='path') | list }}"

@@ -1,0 +1,10 @@
+---
+# Webserver role - default variables
+# These can be overridden in playbooks or inventory
+
+web_root: /var/www/html
+web_user: www-data
+web_group: www-data
+web_service: apache2
+web_port: 80
+server_name: localhost

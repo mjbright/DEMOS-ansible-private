@@ -1,0 +1,9 @@
+---
+# Variables specific to webservers group
+
+web_port: 80
+ssl_enabled: false
+max_connections: 500
+worker_processes: 4
+
+application_env: production

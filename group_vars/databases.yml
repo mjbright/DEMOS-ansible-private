@@ -1,0 +1,10 @@
+---
+# Variables specific to databases group
+
+db_port: 5432
+db_max_connections: 100
+db_shared_buffers: 256MB
+db_effective_cache_size: 1GB
+
+backup_enabled: true
+backup_retention_days: 30

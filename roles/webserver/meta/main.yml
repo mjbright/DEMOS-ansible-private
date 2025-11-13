@@ -1,0 +1,29 @@
+---
+# Webserver role - metadata
+# Provides information about the role
+
+galaxy_info:
+  author: Ansible Demo
+  description: Basic webserver installation and configuration
+  company: Demo Company
+  
+  license: MIT
+  
+  min_ansible_version: "2.9"
+  
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+
+  galaxy_tags:
+    - webserver
+    - apache
+    - demo
+
+dependencies: []

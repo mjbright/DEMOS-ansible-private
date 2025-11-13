@@ -1,0 +1,48 @@
+---
+# Package Installation Demo
+# Demonstrates installing packages on different distributions
+# Run with: ansible-playbook playbooks/install-packages.yml -i inventory/localhost
+
+- name: Install Common Packages
+  hosts: localhost
+  become: yes
+  gather_facts: yes
+
+  vars:
+    packages_to_install:
+      - curl
+      - wget
+      - git
+      - vim
+
+  tasks:
+    - name: Update apt cache (Debian/Ubuntu)
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+
+    - name: Install packages on Debian/Ubuntu
+      apt:
+        name: "{{ packages_to_install }}"
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install packages on RedHat/CentOS
+      yum:
+        name: "{{ packages_to_install }}"
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Verify installation
+      command: "which {{ item }}"
+      register: package_check
+      changed_when: false
+      failed_when: false
+      loop: "{{ packages_to_install }}"
+
+    - name: Show installed package locations
+      debug:
+        msg: "{{ item.item }} is installed at: {{ item.stdout }}"
+      loop: "{{ package_check.results }}"
+      when: item.rc == 0
